@@ -13,6 +13,7 @@ from pytest import yield_fixture as fixture
 from testfixtures import Comparison as C
 from testfixtures import StringComparison as S
 from testing import assert_command
+from testing import run
 from testing.assertions import retry
 
 from pgctl.daemontools import SvStat
@@ -446,6 +447,32 @@ ERROR: reloading is not yet implemented.
 ''',
             1,
         )
+
+
+def docker_ps():
+    match_name = 'pgctl-playground/mydocker:latest'
+    cmd = 'docker ps | grep {}'.format(match_name)
+    p = Popen(['bash', '-c', cmd], stdout=PIPE, stderr=PIPE)
+    stdout, stderr = run(p)
+    return stdout, stderr
+
+
+class DescribeDockerExample(object):
+
+    @fixture
+    def service_name(self):
+        yield 'docker'
+
+    def it_stops_containers_on_stop(self, in_example_dir):
+        check_call(('pgctl-2015', 'start', 'mydocker'))
+        stdout, stderr = docker_ps()
+        assert stdout != ''
+        assert stderr == ''
+
+        check_call(('pgctl-2015', 'stop', 'mydocker'))
+        stdout, stderr = docker_ps()
+        assert stdout == ''
+        assert stderr == ''
 
 
 class DescribeAliases(object):

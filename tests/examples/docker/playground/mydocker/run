@@ -1,0 +1,7 @@
+#!/bin/bash
+PROJECT=pgctl
+DIR=playground/mydocker
+USER=test_user
+
+docker build -t $USER-$PROJECT-$DIR .
+exec docker run $USER-$PROJECT-$DIR

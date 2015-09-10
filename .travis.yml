@@ -1,4 +1,11 @@
 language: python
+
+# sudo:false gives us the new, faster cluster and enables caches for public repos
+# http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+sudo: true #  required for docker
+services:
+    - docker
+
 env:
     - TOXENV=python
 python:
@@ -10,21 +17,19 @@ matrix:
     fast_finish: true
 
 before_install:
+    - sudo apt-get update
+    - sudo apt-get install daemontools
+    - sudo apt-get install pv
     # the travis default umask is 002, but ubuntu's is 022
     - umask 022
     - chmod -R g-w .
     - export TOP=$PWD
 install:
-    - sudo apt-get install daemontools
-    - sudo apt-get install pv
     - pip install --upgrade pip
     - pip install -r requirements.d/travis.txt
 script: tox
 after_success: coveralls
  
-# sudo:false gives us the new, faster cluster and enables caches for public repos
-# http://docs.travis-ci.com/user/workers/container-based-infrastructure/
-sudo: true
 cache:
     directories:
         - $HOME/.pip
