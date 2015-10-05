@@ -1,4 +1,0 @@
-# packages installed during continuous integration
-# CI is like interactive dev, but we do a "real" (rather than --editable) install
--r test.txt
-.

@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eux
 
 # the travis default umask is 002, but ubuntu's is 022
 umask 022
