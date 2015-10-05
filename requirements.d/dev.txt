@@ -4,5 +4,3 @@
 -r docs.txt
 -r test.txt
 pip
-
-tox

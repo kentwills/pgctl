@@ -1,4 +1,0 @@
-## the minimum set of packages that should be installed by travis
-coverage
-coveralls
-tox

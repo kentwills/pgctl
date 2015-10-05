@@ -6,12 +6,32 @@ from __future__ import unicode_literals
 import os
 import shutil
 
+import pytest
 from py._path.local import LocalPath as Path
 from pytest import yield_fixture as fixture
 
+from pgctl.cli import PgctlApp
+
 TOP = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-from pgctl.cli import PgctlApp
+env_whitelist = (
+    'SELENIUM_LOGLEVEL',
+    'HOME',
+    'TERM',
+    'PATH',
+    # enables boot2docker:
+    'DOCKER_HOST',
+    'DOCKER_CERT_PATH',
+    'DOCKER_TLS_VERIFY',
+)
+
+
+@pytest.fixture(autouse=True)
+def fixed_environment_vars():
+    """This resets the environment for all tests so that we can test sauce labs and locally individually"""
+    for var in dict(os.environ):
+        if var not in env_whitelist:
+            del os.environ[var]
 
 
 @fixture

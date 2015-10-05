@@ -1,12 +1,10 @@
 #!/bin/bash
 set -eu
-# the travis default umask is 002, but ubuntu's is 022
-umask 022
-
 fail() { echo '[31;1mFAIL[m'; }
 trap fail ERR
 
 if [ -n "$VIRTUAL_ENV" -a -d $VIRTUAL_ENV/local ]; then
+    # clean up the virtualenv:
     # see: https://bitbucket.org/ned/coveragepy/issue/340/keyerror-subpy
     rm -rf $VIRTUAL_ENV/local
     find $VIRTUAL_ENV -name '*.pyc' -print0 | xargs -0r rm
@@ -22,23 +20,29 @@ else
     n="0 -s"
 fi
 
+# never import anything from $PWD, please
+cd $(mktemp -d)
+
 # See: http://nedbatchelder.com/code/coverage/subprocess.html
 $TOP/tests/testing/install_coverage_pth.py
 
 # careful not to leave .coverage.$HOST.$RANDOM files laying about on failure.
 combine() { coverage combine --rcfile=$TOP/.coveragerc; }
-trap combine ERR
+trap 'combine; fail' ERR
 
 combine
 coverage erase --rcfile=$TOP/.coveragerc
 
 export COVERAGE_PROCESS_START=$TOP/.coveragerc
 src=$($TOP/tests/testing/get_modulefile.py $PROJECT)
-py.test -n $n "$@" $TOP/tests $src
+py.test -c $TOP/pytest.ini -n $n "$@" $TOP/tests $src
 unset COVERAGE_PROCESS_START
 
 combine
 coverage html --rcfile=$TOP/.coveragerc
 coverage report --rcfile=$TOP/.coveragerc
 
+cd $TOP
+coveralls
 pre-commit run --all-files
+echo '[37;42;1mSUCCESS[m'

@@ -1,8 +1,3 @@
-machine:
-    environment:
-        TOP: $PWD
-        TOXENV: python
-
 dependencies:
     pre:
         - ./CI/install

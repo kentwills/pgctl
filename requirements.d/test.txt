@@ -1,6 +1,7 @@
 # packages installed during test
-
+.
 coverage
+coveralls
 flake8
 mock
 pre-commit>=0.3.6
