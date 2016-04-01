@@ -4,6 +4,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import argparse
+import json
 import os
 import time
 from subprocess import MAXFD
@@ -96,6 +97,11 @@ class PgctlApp(object):
         for service in self.services:
             service.background()
         self.__change_state('-u', 'up', 'Starting:', 'Started:')
+
+        from time import gmtime, strftime
+        import clog
+        clog.log_line('pgctl_www_service', json.dumps({'action': 'start', 'user': os.environ.get(
+            'USER', 'unknown'), 'time': strftime('%Y-%m-%d %H:%M:%S', gmtime())}))
 
     def stop(self):
         """Idempotent stop of a service or group of services"""

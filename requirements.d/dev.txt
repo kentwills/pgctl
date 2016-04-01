@@ -3,6 +3,7 @@
 -e .
 -r docs.txt
 -r test.txt
+clog
 pip
 
 tox
